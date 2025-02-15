@@ -1,4 +1,3 @@
-```markdown
 # Interpretable CNN for Big Five Personality Traits using Audio Data
 
 This repository contains the source code for the paper:
