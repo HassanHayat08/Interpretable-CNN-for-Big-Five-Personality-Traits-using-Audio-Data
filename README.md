@@ -1,122 +1,194 @@
-# Source code of Interpretable CNN for Big Five Personality Traits using Audio Data. (The Code Follows MIT License)
+```markdown
+# Interpretable CNN for Big Five Personality Traits using Audio Data
 
-This package was developed by Mr.Hassan Hayat (hhassan0@uoc.edu). Please feel free to contact in case of any query regarding the package. You can run this package at your own risk. This package is free for academic use.
+This repository contains the source code for the paper:
 
-To read the paper: Hassan Hayat, Carles Ventura, Agata Lapedriza, “On the Use of Interpretable CNN for Personality Trait Recognition from Audio”, Artificial Intelligence Research and Development, Vol: 69, Page: 135 - 144, 2019. DOI: 10.3233/FAIA190116
+**Hassan Hayat, Carles Ventura, Agata Lapedriza, “On the Use of Interpretable CNN for Personality Trait Recognition from Audio”, Artificial Intelligence Research and Development, Vol: 69, Pages: 135-144, 2019. DOI: [10.3233/FAIA190116](https://doi.org/10.3233/FAIA190116)**
 
-**Operating System** 
+This package was developed by Mr. Hassan Hayat (hhassan0@uoc.edu). Please feel free to contact him if you have any queries regarding the package. Use this package at your own risk; it is free for academic use.
+
+---
+
+## Operating System
 
 - Ubuntu Linux
 
-**Requirements**
+---
 
-- Python3.x.x
+## Requirements
 
-- GPU with CUDA support
+- **Python:** 3.x.x
+- **GPU:** With CUDA support
+- **Audio Features:** [VGGish](https://github.com/tensorflow/models/tree/master/research/audioset/vggish)
+- **TensorFlow:** 1.14
+- **MATLAB:** 2014b
+- **libffmpeg**
 
-- Audio features (https://github.com/tensorflow/models/tree/master/research/audioset/vggish)
+---
 
-- Tensorflow1.14
+## Dataset
 
-- Matlab 2014b
+- **ChaLearn Dataset:** [ChaLearn LAP 2016](http://chalearnlap.cvc.uab.es/dataset/24/description/)
 
-- libffmpeg
+---
 
-**Dataset**
+## Setup and Usage
 
-- Dataset [ChaLearn](http://chalearnlap.cvc.uab.es/dataset/24/description/)
+### 1. Preprocessing: Extract WAV Files from MP4 Videos
 
-## Setup
+Extract WAV files from MP4 video files in the same directory:
 
-*Extract wav files from mp4 video files in the same directory*
+```bash
+./data_processing/mp4_to_wav.sh
+```
 
-./data_processing/mp4_to_wav.sh	
+---
 
-**Using Spectrogram**
+### 2. Using Spectrogram
 
-*Use vggish_input.py and mel_features.py from Audio feature to generate 2D Mel_Spectrogram*
-	
-***From here, we divided Mel_Spectrogram into two categories:*** 
+#### Generate 2D Mel-Spectrogram
 
-*Clip_Spectrogram: is a 3D matrix. In which, 1st dimension represents the length (in second) of the wav file, 2nd dimension represents the number of 
-frames in a second, and 3rd dimension represents frequency bands.*
+Use `vggish_input.py` and `mel_features.py` from the Audio features to generate a 2D Mel-Spectrogram.  
+The Mel-Spectrogram is divided into two categories:
 
-**Fine-Tune CNN**
+- **Clip_Spectrogram:** A 3D matrix where:
+  - 1st dimension represents the length (in seconds) of the WAV file,
+  - 2nd dimension represents the number of frames per second,
+  - 3rd dimension represents frequency bands.
 
-- ./clip_spectrogram_cnn/regular_cnn_model.py
+#### Fine-Tune CNN Models on Clip-Based Spectrograms
 
-**Fine-Tune CAM_CNN**
+- **Fine-Tune Regular CNN:**
 
-- ./clip_spectrogram_cnn/cam_cnn_model.py  
+  ```bash
+  ./clip_spectrogram_cnn/regular_cnn_model.py
+  ```
 
-**CAM Generation**
+- **Fine-Tune CAM-CNN:**
 
-*Store inputs with corresponding conv_features and the last layer weights*
+  ```bash
+  ./clip_spectrogram_cnn/cam_cnn_model.py
+  ```
 
-- ./cam_generation_clip_spectrogram/get_features_input_weights.py
+#### CAM Generation for Clip-Based Spectrograms
 
-*Get 20 maximum predictions of all big five personality traits with corresponding inputs, conv_features, and the last layer weights* 
+- **Store Inputs with Corresponding Convolutional Features and Last Layer Weights:**
 
-- ./cam_generation_clip_spectrogram/get_20_max_pred.py
+  ```bash
+  ./cam_generation_clip_spectrogram/get_features_input_weights.py
+  ```
 
-*Generate cam mapping of all big five personality traits* 
+- **Get 20 Maximum Predictions of All Big Five Personality Traits:**
 
-- ./cam_generation_clip_spectrogram/cam_mapping.m
+  ```bash
+  ./cam_generation_clip_spectrogram/get_20_max_pred.py
+  ```
 
-*Summary_Spectrogram: It holds the whole audio information of a video and concatenates the clip-based 2D log-Mel spectrograms along with the temporal domain.
-This way, we obtain a 1248x64 spectrogram. Then, an average pool operation is performed to reduce the size of the spectrogram. We take an average of 60 ms 
-frame across all 64 Mel-spaced frequency bins, obtaining, as a result, a 208x64 spectrogram, which we refer to as Summary-Spectrogram.*
+- **Generate CAM Mapping:**
 
-**Fine-Tuned CNN**
+  ```bash
+  ./cam_generation_clip_spectrogram/cam_mapping.m
+  ```
 
-- ./summary_spectrogram_cnn/regular_cnn_model.py 
+---
 
-**Fine-Tuned CAM_CNN**
+### 3. Using Summary Spectrogram
 
-- ./summary_spectrogram_cnn/cam_cnn_model.py 
+**Summary_Spectrogram Description:**  
+This holds the complete audio information of a video by concatenating clip-based 2D log-Mel spectrograms along the temporal domain, resulting in a 1248x64 spectrogram. An average pooling operation (averaging 60 ms frames across all 64 Mel-spaced frequency bins) is then applied, producing a 208x64 Summary-Spectrogram.
 
-**CAM Generation**
+#### Fine-Tune CNN Models on Summary Spectrogram
 
-*Store inputs with corresponding conv_features and the last layer weights*
+- **Fine-Tune Regular CNN:**
 
-- ./cam_generation_summary_spectrogram/get_features_input_weights.py  
+  ```bash
+  ./summary_spectrogram_cnn/regular_cnn_model.py
+  ```
 
-*Get 20 maximum predictions of all big five personality traits with corresponding inputs, conv_features, and the last layer weights*
+- **Fine-Tune CAM-CNN:**
 
-- ./cam_generation_summary_spectrogram/get_20_max_pred.py  
+  ```bash
+  ./summary_spectrogram_cnn/cam_cnn_model.py
+  ```
 
-*Generate cam mapping of all big five personality traits*
-  
-- ./cam_generation_summary_spectrogram/cam_mapping.m
+#### CAM Generation for Summary Spectrogram
 
- 
-**Using Raw Audio Wav**
+- **Store Inputs with Corresponding Convolutional Features and Last Layer Weights:**
 
-*Down sample the audio signal*
+  ```bash
+  ./cam_generation_summary_spectrogram/get_features_input_weights.py
+  ```
 
-- ./data_processing/signal_downsamplng.py 
+- **Get 20 Maximum Predictions of All Big Five Personality Traits:**
 
-*Convert raw wav into different frequency bins*
-  
-- ./data_processing/get_fft_features.py
+  ```bash
+  ./cam_generation_summary_spectrogram/get_20_max_pred.py
+  ```
 
-**Train CAM_CNN**
+- **Generate CAM Mapping:**
 
-*Train the cam_cnn model*
+  ```bash
+  ./cam_generation_summary_spectrogram/cam_mapping.m
+  ```
 
-- ./rawwav_cnn/cam_cnn_model.py 	
- 
-**CAM Generation**
+---
 
-*Store inputs with corresponding conv_features and the last layer weights*
+### 4. Using Raw Audio WAV
 
-- ./cam_generation_rawwav/get_features_input_weights.py  
+#### Preprocessing Raw Audio
 
-*Get 20 maximum predictions of all big five personality traits with corresponding inputs, conv_features, and the last layer weights*  
-  
-- ./cam_generation_rawwav/get_20_max_pred.py 
+- **Downsample the Audio Signal:**
 
-*Generate cam mapping of all big five personality traits*
-  
-- ./cam_generation_rawwav/cam_mapping.py
+  ```bash
+  ./data_processing/signal_downsamplng.py
+  ```
 
+- **Convert Raw WAV into Different Frequency Bins:**
+
+  ```bash
+  ./data_processing/get_fft_features.py
+  ```
+
+#### Train CAM-CNN on Raw Audio
+
+- **Train the CAM-CNN Model:**
+
+  ```bash
+  ./rawwav_cnn/cam_cnn_model.py
+  ```
+
+#### CAM Generation for Raw Audio
+
+- **Store Inputs with Corresponding Convolutional Features and Last Layer Weights:**
+
+  ```bash
+  ./cam_generation_rawwav/get_features_input_weights.py
+  ```
+
+- **Get 20 Maximum Predictions of All Big Five Personality Traits:**
+
+  ```bash
+  ./cam_generation_rawwav/get_20_max_pred.py
+  ```
+
+- **Generate CAM Mapping:**
+
+  ```bash
+  ./cam_generation_rawwav/cam_mapping.py
+  ```
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Contact
+
+For any questions or further information regarding this package, please contact:
+
+**Mr. Hassan Hayat**  
+Email: [hhassan0@uoc.edu](mailto:hhassan0@uoc.edu)
+```
